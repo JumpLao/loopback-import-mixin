@@ -83,9 +83,7 @@ module.exports = function (Model, ctx) {
             ImportContainer: ImportContainerName,
             ImportLog: ImportLogName,
             relations: ctx.relations
-          })], {
-            cwd: '/workspace'
-          });
+          })]);
         if (typeof finish === 'function') finish(null, fileContainer);
         resolve(fileContainer);
       });
