@@ -6,6 +6,7 @@ const moment = require('moment');
 const childProcess = require('child_process');
 const csv = require('csv-parser');
 const fs = require('fs');
+const path = require('path');
 // import DataSourceBuilder from './builders/datasource-builder';
 /**
   * Bulk Import Mixin
@@ -82,7 +83,9 @@ module.exports = function (Model, ctx) {
             ImportContainer: ImportContainerName,
             ImportLog: ImportLogName,
             relations: ctx.relations
-          })]);
+          })], {
+            cwd: '/workspace'
+          });
         if (typeof finish === 'function') finish(null, fileContainer);
         resolve(fileContainer);
       });
@@ -92,7 +95,11 @@ module.exports = function (Model, ctx) {
    * Create import method (Not Available through REST)
    **/
   Model['import' + ctx.method] = function ImportMethod(container, file, options, finish) {
-    const filePath = __dirname + '/../../../' + options.root + '/' + options.container + '/' + options.file;
+    let filePath = path.join(options.root,options.container,options.file);
+    if (!path.isAbsolute(options.root)) {
+      filePath = path.join(__dirname,'/../../../',options.root,options.container,options.file);
+    }
+    
     const ImportContainer = Model.app.models[options.ImportContainer];
     const ImportLog = Model.app.models[options.ImportLog];
     async.waterfall([
